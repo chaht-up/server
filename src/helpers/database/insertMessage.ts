@@ -7,7 +7,6 @@ VALUES ($1) RETURNING id, text, created_at as "createdAt"`;
 
 const insertMessage = async (text: string): Promise<IMessageRecord> => {
   const result = await pool.query(query, [text]);
-  console.log(result.rows);
   return result.rows[0];
 };
 
