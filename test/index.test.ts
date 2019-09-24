@@ -1,11 +1,14 @@
 import io from 'socket.io-client';
 import server from '../src/index';
 
+const { PORT = 3000 } = process.env;
+
 describe('socket server', () => {
   let client;
 
-  beforeAll(() => {
-    client = io(`http://localhost:${3000}`);
+  beforeAll((done) => {
+    client = io(`http://localhost:${PORT}`);
+    client.on('connect', done);
   });
 
   afterAll((done) => {
