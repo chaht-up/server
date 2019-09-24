@@ -5,7 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "compile": "rm -rf && tsc",
-    "test": "jest --collectCoverage"
+    "migrate": "node-pg-migrate",
+    "pretest": "DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test node-pg-migrate up",
+    "test": "DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test jest --collectCoverage",
+    "posttest": "DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test node-pg-migrate down"
   },
   "author": "",
   "license": "ISC",
@@ -28,6 +31,8 @@
     "typescript": "^3.6.3"
   },
   "dependencies": {
+    "node-pg-migrate": "^3.23.0",
+    "pg": "^7.12.1",
     "socket.io": "^2.3.0"
   }
 }

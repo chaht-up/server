@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 import server from '../src/index';
+import pool from '../src/helpers/database/pool';
 
 const { PORT = 3000 } = process.env;
 
@@ -13,7 +14,11 @@ describe('socket server', () => {
 
   afterAll((done) => {
     client.close();
-    server.close(done);
+    server.close(() => {
+      pool.end(() => {
+        done();
+      });
+    });
   });
 
   it('echoes requests', (done) => {
