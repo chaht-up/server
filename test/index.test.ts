@@ -2,7 +2,6 @@ import io from 'socket.io-client';
 import server from '../src/index';
 import pool from '../src/helpers/database/pool';
 import seedMessages from './helpers/database/seedMessages';
-import * as db from '../src/helpers/database';
 
 const { PORT = 3000 } = process.env;
 
@@ -35,7 +34,7 @@ describe('socket server', () => {
     });
 
     it('handles errors and returns empty array', (done) => {
-      const spy = jest.spyOn(db, 'getAllMessages')
+      const spy = jest.spyOn(pool, 'query')
         .mockImplementationOnce(() => { throw new Error(); });
 
       client.emit('app:load', (messages) => {
@@ -63,7 +62,7 @@ describe('socket server', () => {
 
     it('handles errors on insertion and does not send out new message', (done) => {
       const spy = jest.fn();
-      const dbSpy = jest.spyOn(db, 'insertMessage')
+      const dbSpy = jest.spyOn(pool, 'query')
         .mockImplementationOnce(() => { throw new Error(); });
       const text = 'please insert girder';
 
