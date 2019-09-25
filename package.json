@@ -11,6 +11,11 @@
     "test": "NODE_ENV=test DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test jest --collectCoverage",
     "posttest": "DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test node-pg-migrate down"
   },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm test"
+    }
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -26,6 +31,7 @@
     "eslint": "^6.4.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
+    "husky": "^3.0.5",
     "jest": "^24.9.0",
     "socket.io-client": "^2.3.0",
     "ts-jest": "^24.1.0",
