@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 import server from '../src/index';
 import pool from '../src/helpers/database/pool';
 import seedMessages from './helpers/database/seedMessages';
+import * as db from '../src/helpers/database';
 
 const { PORT = 3000 } = process.env;
 
@@ -25,30 +26,67 @@ describe('socket server', () => {
     });
   });
 
-  it('responds to the app:load event with all messages', (done) => {
-    client.emit('app:load', (messages) => {
-      expect(messages.map((m) => m.text)).toEqual(loadMessages);
-      done();
+  describe('app:load', () => {
+    it('responds to the app:load event with all messages', (done) => {
+      client.emit('app:load', (messages) => {
+        expect(messages.map((m) => m.text)).toEqual(loadMessages);
+        done();
+      });
+    });
+
+    it('handles errors and returns empty array', (done) => {
+      const spy = jest.spyOn(db, 'getAllMessages')
+        .mockImplementationOnce(() => { throw new Error(); });
+
+      client.emit('app:load', (messages) => {
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(messages).toEqual([]);
+        spy.mockRestore();
+        done();
+      });
     });
   });
 
-  it('receives new messages and emits them globally', (done) => {
-    const text = 'please insert girder';
+  afterEach(() => jest.restoreAllMocks());
 
-    client.emit('message:post', text);
+  describe('mesage:post', () => {
+    it('receives new messages and emits them globally', (done) => {
+      const text = 'please insert girder';
 
-    client.once('message:new', ({ text: response }) => {
-      expect(response).toEqual(text);
-      done();
+      client.emit('message:post', text);
+
+      client.once('message:new', ({ text: response }) => {
+        expect(response).toEqual(text);
+        done();
+      });
+    });
+
+    it('handles errors on insertion and does not send out new message', (done) => {
+      const spy = jest.fn();
+      const dbSpy = jest.spyOn(db, 'insertMessage')
+        .mockImplementationOnce(() => { throw new Error(); });
+      const text = 'please insert girder';
+
+      client.emit('message:post', text);
+      client.once('message:new', spy);
+
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledTimes(0);
+        expect(dbSpy).toHaveBeenCalledTimes(1);
+        dbSpy.mockRestore();
+        done();
+      }, 1000);
     });
   });
 
-  it('echoes requests', (done) => {
-    client.send('howdy');
+  describe('echo', () => {
+    it('echoes requests', (done) => {
+      client.send('howdy');
 
-    client.on('message', (message) => {
-      expect(message).toEqual('howdy');
-      done();
+      client.on('message', (message) => {
+        expect(message).toEqual('howdy');
+        done();
+      });
     });
   });
 });

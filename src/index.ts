@@ -8,13 +8,24 @@ const io = socketIO(PORT);
 
 io.on('connection', (socket) => {
   socket.on('app:load', async (cb) => {
-    const messages = await getAllMessages();
-    cb(messages);
+    try {
+      const messages = await getAllMessages();
+      cb(messages);
+    } catch (e) {
+      console.error('Encountered error in "app:load":');
+      console.error(e);
+      cb([]);
+    }
   });
 
   socket.on('message:post', async (message) => {
-    const record = await insertMessage(message);
-    io.emit('message:new', record);
+    try {
+      const record = await insertMessage(message);
+      io.emit('message:new', record);
+    } catch (e) {
+      console.error('Encountered error in "message:post":');
+      console.error(e);
+    }
   });
 
   socket.on('message', (message) => {
