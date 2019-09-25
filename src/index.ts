@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import socketIO from 'socket.io';
 import { getAllMessages, insertMessage } from './helpers/database';
 
