@@ -1,10 +1,17 @@
 import 'dotenv/config';
+import http from 'http';
 import socketIO from 'socket.io';
 import { getAllMessages, insertMessage } from './helpers/database';
 
 const { PORT = 3000 } = process.env;
 
-const io = socketIO(PORT);
+const server = http.createServer((req, res) => {
+  req.pipe(res);
+});
+
+const io = socketIO(server);
+
+server.listen(PORT);
 
 io.on('connection', (socket) => {
   socket.on('app:load', async (cb) => {
@@ -24,4 +31,4 @@ io.on('connection', (socket) => {
   });
 });
 
-export default io;
+export default server;
