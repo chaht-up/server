@@ -15,4 +15,6 @@ module.exports = {
       statements: 100,
     },
   },
+  globalSetup: '<rootDir>/test/setup.ts',
+  globalTeardown: '<rootDir>/test/teardown.ts',
 };

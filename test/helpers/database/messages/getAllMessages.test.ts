@@ -1,7 +1,8 @@
-import { getAllMessages } from '../../../src/helpers/database';
-import seedMessages from './seedMessages';
+import { getAllMessages } from '../../../../src/helpers/database';
+import seedMessages from '../seedMessages';
 
 describe('getAllMessages', () => {
+  let pgClient;
   const values = [
     'hello',
     'is there anybody out there',
@@ -10,6 +11,10 @@ describe('getAllMessages', () => {
 
   beforeAll(async () => {
     await seedMessages(values);
+  });
+
+  afterAll(async () => {
+    await pgClient.release();
   });
 
   it('retrieves all messages from DB', async () => {

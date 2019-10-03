@@ -1,52 +1,36 @@
 import io from 'socket.io-client';
-import http from 'http';
-import server from '../src';
 import pool from '../src/helpers/database/pool';
 import seedMessages from './helpers/database/seedMessages';
+import request from './helpers/request';
 
 const { PORT = 3000 } = process.env;
 
 const loadMessages = ['this', 'is', 'only', 'a', 'test'];
-let client;
 
 describe('app', () => {
-  beforeAll((done) => {
-    seedMessages(loadMessages).then(() => {
-      client = io(`http://localhost:${PORT}`)
-        .on('connect', () => {
-          console.log('connected');
-          done();
-        });
-    });
+  let client;
+  let pgClient;
+
+  beforeAll(async (done) => {
+    pgClient = await pool.connect();
+    await seedMessages(loadMessages);
+
+    client = io(`http://localhost:${PORT}`)
+      .on('connect', done);
   });
 
-  afterAll((done) => {
+  afterAll(async () => {
     client.close();
-    server.close(() => {
-      pool.end(() => {
-        console.log('done');
-        done();
-      });
-    });
+    await pgClient.release();
+  //   console.log('afterAll done');
   });
 
   describe('socket server', () => {
     describe('app:load', () => {
-      it('responds to the app:load event with all messages', (done) => {
+      it('responds to the app:load event with all messages', async (done) => {
+        await seedMessages(loadMessages);
         client.emit('app:load', (messages) => {
           expect(messages.map((m) => m.text)).toEqual(loadMessages);
-          done();
-        });
-      });
-
-      it('handles errors and returns empty array', (done) => {
-        const spy = jest.spyOn(pool, 'query')
-          .mockImplementationOnce(() => { throw new Error(); });
-
-        client.emit('app:load', (messages) => {
-          expect(spy).toHaveBeenCalledTimes(1);
-          expect(messages).toEqual([]);
-          spy.mockRestore();
           done();
         });
       });
@@ -65,23 +49,6 @@ describe('app', () => {
           done();
         });
       });
-
-      it('handles errors on insertion and does not send out new message', (done) => {
-        const spy = jest.fn();
-        const dbSpy = jest.spyOn(pool, 'query')
-          .mockImplementationOnce(() => { throw new Error(); });
-        const text = 'please insert girder';
-
-        client.emit('message:post', text);
-        client.once('message:new', spy);
-
-        setTimeout(() => {
-          expect(spy).toHaveBeenCalledTimes(0);
-          expect(dbSpy).toHaveBeenCalledTimes(1);
-          dbSpy.mockRestore();
-          done();
-        }, 1000);
-      });
     });
 
     describe('echo', () => {
@@ -97,31 +64,10 @@ describe('app', () => {
   });
 
   describe('http server', () => {
-    it('echos requests', (done) => {
-      http
-        .request({
-          port: PORT,
-          host: 'localhost',
-          method: 'POST',
-        })
-        .on('response', (res) => {
-          let body = '';
-          res
-            .on('data', (chunk) => {
-              body += chunk.toString('utf8');
-            })
-            .on('end', () => {
-              expect(body).toEqual('ping');
-              done();
-            })
-            .on('error', (err) => {
-              throw err;
-            });
-        })
-        .on('error', (err) => {
-          throw err;
-        })
-        .end('ping');
+    it('handles 404s', async () => {
+      const response = await request({ port: Number(PORT), path: '/api/home', method: 'POST' });
+
+      expect(response).toEqual({ code: 404, body: { message: 'Not found.' } });
     });
   });
 });

@@ -1,4 +1,4 @@
-import { insertMessage } from '../../../src/helpers/database';
+import { insertMessage } from '../../../../src/helpers/database';
 
 describe('insertMessage', () => {
   it('inserts messages into the dataase', async () => {
