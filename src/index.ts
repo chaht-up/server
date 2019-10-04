@@ -2,8 +2,8 @@ import 'dotenv/config';
 import http from 'http';
 import express from 'express';
 import socketIO from 'socket.io';
-import { authentication } from './helpers/server/controllers';
-import { handleConnect } from './helpers/socket';
+import { authentication } from './server/controllers';
+import { handleConnect } from './socket';
 
 const { PORT = 3000 } = process.env;
 

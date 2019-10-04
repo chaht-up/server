@@ -1,4 +1,4 @@
-import { getAllMessages, insertMessage } from '../../database';
+import { getAllMessages, insertMessage } from '../database';
 
 export default function handleConnect(this: SocketIO.Server, socket: SocketIO.Socket) {
   socket.on('app:load', async (cb) => {

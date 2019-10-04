@@ -4,6 +4,7 @@ import authenticateUser from './users/authenticateUser';
 import createUser from './users/createUser';
 import createSession from './sessions/createSession';
 import checkSession from './sessions/checkSession';
+import destroySession from './sessions/destroySession';
 
 
 export {
@@ -13,4 +14,5 @@ export {
   createUser,
   createSession,
   checkSession,
+  destroySession,
 };
