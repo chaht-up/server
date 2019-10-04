@@ -6,6 +6,7 @@ interface IOptions {
   method: 'POST';
   body?: null | object;
   host?: string;
+  headers?: object;
 }
 
 interface IResponse {
@@ -19,6 +20,7 @@ const request = (options: IOptions): Promise<IResponse> => new Promise((resolve,
     port,
     method,
     body,
+    headers = {},
     host = 'localhost',
   } = options;
 
@@ -30,6 +32,7 @@ const request = (options: IOptions): Promise<IResponse> => new Promise((resolve,
       path,
       headers: {
         'content-type': 'application/json',
+        ...headers,
       },
     })
     .on('response', (res) => {

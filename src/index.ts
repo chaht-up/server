@@ -9,16 +9,14 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 app.set('trust proxy', 1);
-
-const server = http.createServer(app);
-
 app.use('/api', authentication);
 app.all('*', (_, res) => res.status(404).json({ message: 'Not found.' }));
 
+const server = http.createServer(app);
+
 const io = socketIO(server);
+io.on('connection', handleConnect(io));
 
 server.listen(PORT);
-
-io.on('connection', handleConnect.bind(io));
 
 export default server;

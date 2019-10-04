@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import {
@@ -16,7 +15,6 @@ export default express.Router()
     cookieParser(process.env.COOKIE_SECRET || 'development'),
   )
   .post('/register', async (req, res) => {
-    console.log(req.body);
     const { username, password } = req.body;
 
     await createUser(username, password);
@@ -25,7 +23,6 @@ export default express.Router()
   })
   .post('/login', async (req, res) => {
     const { username, password } = req.body;
-    console.log(req.body);
     try {
       const userId = await authenticateUser(username, password);
       const token = await createSession(userId);

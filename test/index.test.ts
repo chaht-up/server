@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import server from '../src';
 import pool from '../src/database/pool';
 import seedMessages from './helpers/seedMessages';
 import request from './helpers/request';
@@ -19,9 +20,10 @@ describe('app', () => {
       .on('connect', done);
   });
 
-  afterAll(async () => {
+  afterAll(async (done) => {
     client.close();
     await pgClient.release();
+    server.close(done);
   });
 
   describe('socket server', () => {

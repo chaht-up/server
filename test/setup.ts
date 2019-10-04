@@ -1,3 +1,1 @@
-import '../src';
-
 module.exports = () => {};

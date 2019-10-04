@@ -10,7 +10,7 @@
     "test-migrate-up": "DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test node-pg-migrate up",
     "test-migrate-down": "DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test node-pg-migrate down",
     "pretest": "npm run test-migrate-down && npm run test-migrate-up",
-    "test": "NODE_ENV=test DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test jest --collectCoverage --runInBand --forceExit"
+    "test": "NODE_ENV=test DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test jest --runInBand --forceExit"
   },
   "husky": {
     "hooks": {
