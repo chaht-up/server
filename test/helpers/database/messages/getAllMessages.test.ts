@@ -1,4 +1,4 @@
-import { getAllMessages } from '../../../../src/helpers/database';
+import { getAllMessages } from '../../../../src/database';
 import seedMessages from '../seedMessages';
 
 describe('getAllMessages', () => {

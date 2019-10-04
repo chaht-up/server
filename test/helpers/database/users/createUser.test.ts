@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
-import { createUser } from '../../../../src/helpers/database';
-import pool from '../../../../src/helpers/database/pool';
+import { createUser } from '../../../../src/database';
+import pool from '../../../../src/database/pool';
 
 describe('createUser', () => {
   let client;
@@ -14,7 +14,7 @@ describe('createUser', () => {
   });
 
   afterAll(async () => {
-    await client.release();
+    client.release();
   });
 
   it('creates a user', async () => {
@@ -28,5 +28,17 @@ describe('createUser', () => {
     expect(secretRows.length).toEqual(1);
     const [{ password }] = secretRows;
     expect(bcrypt.compareSync('test', password)).toEqual(true);
+  });
+
+  it('will not create duplicate users (unique usernames)', async () => {
+    try {
+      const userId = await createUser('test', 'test');
+      expect(userId).not.toBeFalsy();
+      await createUser('test', 'test');
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e).toBeDefined();
+      expect(e.message).toEqual('duplicate key value violates unique constraint "users_username_key"');
+    }
   });
 });

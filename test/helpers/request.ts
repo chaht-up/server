@@ -9,7 +9,7 @@ interface IOptions {
 }
 
 interface IResponse {
-  code: number;
+  res: http.IncomingMessage;
   body: object;
 }
 
@@ -40,7 +40,7 @@ const request = (options: IOptions): Promise<IResponse> => new Promise((resolve,
         })
         .on('end', () => {
           const result = {
-            code: res.statusCode,
+            res,
             body: JSON.parse(responseBody),
           };
           resolve(result);

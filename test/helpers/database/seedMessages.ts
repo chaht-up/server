@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import pool from '../../../src/helpers/database/pool';
+import pool from '../../../src/database/pool';
 
 const seedMessages = async (values: string[]): Promise<void> => {
   const client = await pool.connect();
@@ -9,7 +9,7 @@ const seedMessages = async (values: string[]): Promise<void> => {
     `INSERT INTO messages(text) VALUES ${valuesArray}`,
     values,
   );
-  await client.release();
+  client.release();
 };
 
 export default seedMessages;

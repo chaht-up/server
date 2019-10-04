@@ -2,12 +2,14 @@ import 'dotenv/config';
 import http from 'http';
 import express from 'express';
 import socketIO from 'socket.io';
-import { getAllMessages, insertMessage } from './helpers/database';
 import { authentication } from './helpers/server/controllers';
+import { handleConnect } from './helpers/socket';
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
+app.set('trust proxy', 1);
+
 const server = http.createServer(app);
 
 app.use('/api', authentication);
@@ -17,22 +19,6 @@ const io = socketIO(server);
 
 server.listen(PORT);
 
-io.on('connection', (socket) => {
-  socket.on('app:load', async (cb) => {
-    const messages = await getAllMessages();
-    cb(messages);
-  });
-
-  socket.on('message:post', async (message) => {
-    const record = await insertMessage(message);
-    if (record.id !== 0) {
-      io.emit('message:new', record);
-    }
-  });
-
-  socket.on('message', (message) => {
-    socket.send(message);
-  });
-});
+io.on('connection', handleConnect.bind(io));
 
 export default server;

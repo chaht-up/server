@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import pool from '../src/helpers/database/pool';
+import pool from '../src/database/pool';
 import seedMessages from './helpers/database/seedMessages';
 import request from './helpers/request';
 
@@ -22,7 +22,6 @@ describe('app', () => {
   afterAll(async () => {
     client.close();
     await pgClient.release();
-  //   console.log('afterAll done');
   });
 
   describe('socket server', () => {
@@ -65,9 +64,10 @@ describe('app', () => {
 
   describe('http server', () => {
     it('handles 404s', async () => {
-      const response = await request({ port: Number(PORT), path: '/api/home', method: 'POST' });
+      const { res, body } = await request({ port: Number(PORT), path: '/api/home', method: 'POST' });
 
-      expect(response).toEqual({ code: 404, body: { message: 'Not found.' } });
+      expect(res.statusCode).toEqual(404);
+      expect(body).toEqual({ message: 'Not found.' });
     });
   });
 });

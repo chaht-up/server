@@ -1,15 +1,25 @@
-import { createUser, authenticateUser } from '../../../../src/helpers/database';
-import pool from '../../../../src/helpers/database/pool';
+import { createUser, authenticateUser } from '../../../../src/database';
+import pool from '../../../../src/database/pool';
 
 describe('createUser', () => {
-  beforeEach(async () => {
+  let userId = 0;
+  beforeAll(async () => {
     const client = await pool.connect();
     await client.query('TRUNCATE TABLE users CASCADE');
-    await client.release();
+    userId = await createUser('test', 'anothertest');
+    client.release();
   });
 
   it('creates a user', async () => {
-    await createUser('test', 'anothertest');
-    expect(await authenticateUser('test', 'anothertest')).toEqual(true);
+    expect(await authenticateUser('test', 'anothertest')).toEqual(userId);
+  });
+
+  it('throws if the password is wrong', async () => {
+    try {
+      await authenticateUser('test', 'notTheRightOne');
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e.message).toEqual('Invalid credentials');
+    }
   });
 });
