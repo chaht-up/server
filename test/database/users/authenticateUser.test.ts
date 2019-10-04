@@ -1,13 +1,12 @@
-import { createUser, authenticateUser } from '../../../../src/database';
-import pool from '../../../../src/database/pool';
+import { createUser, authenticateUser } from '../../../src/database';
+import pool from '../../../src/database/pool';
 
 describe('createUser', () => {
   let userId = 0;
-  beforeAll(async () => {
-    const client = await pool.connect();
-    await client.query('TRUNCATE TABLE users CASCADE');
+
+  beforeEach(async () => {
+    await pool.query('TRUNCATE TABLE users CASCADE');
     userId = await createUser('test', 'anothertest');
-    client.release();
   });
 
   it('creates a user', async () => {

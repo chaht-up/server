@@ -1,4 +1,4 @@
-import { insertMessage } from '../../../../src/database';
+import { insertMessage } from '../../../src/database';
 
 describe('insertMessage', () => {
   it('inserts messages into the dataase', async () => {

@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
-import { createUser } from '../../../../src/database';
-import pool from '../../../../src/database/pool';
+import { createUser } from '../../../src/database';
+import pool from '../../../src/database/pool';
 
 describe('createUser', () => {
   let client;

@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import pool from '../src/database/pool';
-import seedMessages from './helpers/database/seedMessages';
+import seedMessages from './helpers/seedMessages';
 import request from './helpers/request';
 
 const { PORT = 3000 } = process.env;

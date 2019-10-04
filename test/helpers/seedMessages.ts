@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import pool from '../../../src/database/pool';
+import pool from '../../src/database/pool';
 
 const seedMessages = async (values: string[]): Promise<void> => {
   const client = await pool.connect();

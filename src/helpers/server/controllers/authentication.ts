@@ -1,8 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import { createUser, authenticateUser } from '../../../database';
-import createSession from '../../../database/sessions/createSession';
+import { createUser, authenticateUser, createSession } from '../../../database';
 
 export default express.Router()
   .use(

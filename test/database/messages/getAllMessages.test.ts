@@ -1,5 +1,5 @@
-import { getAllMessages } from '../../../../src/database';
-import seedMessages from '../seedMessages';
+import { getAllMessages } from '../../../src/database';
+import seedMessages from '../../helpers/seedMessages';
 
 describe('getAllMessages', () => {
   let pgClient;
