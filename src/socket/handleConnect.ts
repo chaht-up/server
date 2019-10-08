@@ -1,4 +1,5 @@
 import { getAllMessages, insertMessage } from '../database';
+import sessionStore from '../helpers/sessionStore';
 
 const handleConnect = (io: SocketIO.Server) => (socket: SocketIO.Socket) => {
   socket.on('app:load', async (cb) => {
@@ -7,7 +8,7 @@ const handleConnect = (io: SocketIO.Server) => (socket: SocketIO.Socket) => {
   });
 
   socket.on('message:post', async (message) => {
-    const record = await insertMessage(message);
+    const record = await insertMessage(message, sessionStore.get(socket));
     io.emit('message:new', record);
   });
 

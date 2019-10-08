@@ -1,6 +1,8 @@
 import { getAllMessages } from '../../../src/database';
 import seedMessages from '../../helpers/seedMessages';
 
+const has = Object.prototype.hasOwnProperty;
+
 describe('getAllMessages', () => {
   let pgClient;
   const values = [
@@ -20,5 +22,8 @@ describe('getAllMessages', () => {
   it('retrieves all messages from DB', async () => {
     const messages = await getAllMessages();
     expect(messages.map((m) => m.text)).toEqual(values);
+    expect(messages.every((m) => has.call(m, 'senderId'))).toBe(true);
+    expect(messages.every((m) => has.call(m, 'id'))).toBe(true);
+    expect(messages.every((m) => has.call(m, 'sentAt'))).toBe(true);
   });
 });
