@@ -52,7 +52,13 @@ describe('app', () => {
     describe('app:load', () => {
       it('responds to the app:load event with all messages', async (done) => {
         await seedMessages(loadMessages);
-        client.emit('app:load', (messages) => {
+        client.emit('app:load', ({ messages, users }) => {
+          for (const [id, user] of Object.entries(users)) {
+            expect(Number.isInteger(Number(id))).toBe(true);
+            const { username, ...rest } = user as any;
+            expect(typeof username).toEqual('string');
+            expect(rest).toEqual({});
+          }
           expect(messages.map((m) => m.text)).toEqual(loadMessages);
           done();
         });

@@ -1,10 +1,11 @@
-import insertMessage from './messages/insertMessage';
 import getAllMessages from './messages/getAllMessages';
+import insertMessage from './messages/insertMessage';
+import createSession from './sessions/createSession';
+import destroySession from './sessions/destroySession';
+import retrieveSessionInfo from './sessions/retrieveSessionInfo';
 import authenticateUser from './users/authenticateUser';
 import createUser from './users/createUser';
-import createSession from './sessions/createSession';
-import retrieveSessionInfo from './sessions/retrieveSessionInfo';
-import destroySession from './sessions/destroySession';
+import getUserDictionary from './users/getUserDictionary';
 
 
 export {
@@ -12,6 +13,7 @@ export {
   getAllMessages,
   authenticateUser,
   createUser,
+  getUserDictionary,
   createSession,
   retrieveSessionInfo,
   destroySession,
