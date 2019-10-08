@@ -58,7 +58,7 @@ describe('authentication controller', () => {
     expect(res.statusCode).toEqual(201);
     expect(res.headers['set-cookie']).not.toBeUndefined();
     const session = res.headers['set-cookie'][0];
-    expect(session).toMatch(/^session=[A-Za-z0-9%.-]+; Path=\/; Secure; SameSite=Strict$/);
+    expect(session).toMatch(/^session=[A-Za-z0-9%.-]+; Path=\/; HttpOnly; SameSite=Strict$/);
   });
 
   it('handles a bad registration and login flow', async () => {
@@ -118,7 +118,7 @@ describe('authentication controller', () => {
     expect(loginResponse.res.statusCode).toEqual(201);
     expect(loginResponse.res.headers['set-cookie']).not.toBeUndefined();
     const session = loginResponse.res.headers['set-cookie'][0];
-    expect(session).toMatch(/^session=[A-Za-z0-9%.-]+; Path=\/; Secure; SameSite=Strict$/);
+    expect(session).toMatch(/^session=[A-Za-z0-9%.-]+; Path=\/; HttpOnly; SameSite=Strict$/);
 
     const logoutResponse = await request({
       port: Number(PORT),
@@ -127,13 +127,20 @@ describe('authentication controller', () => {
       headers: {
         Cookie: session,
       },
-      body: {
-        username: 'test',
-        password: 'goodpassword',
-      },
     });
 
+    const sql = 'SELECT s.is_active as "isActive" FROM sessions s JOIN users u ON u.id = s.user_id';
+    const { rows: dbSessions } = await pool.query(sql);
+
+    expect(dbSessions.length).toEqual(1);
+    expect(dbSessions[0].isActive).toEqual(false);
     expect(logoutResponse.res.statusCode).toEqual(200);
+    expect(logoutResponse.res.headers['set-cookie']).not.toBeUndefined();
+
+    const closedSession = logoutResponse.res.headers['set-cookie'][0];
+    const today = new Date().toUTCString();
+    const re = new RegExp(`^session=; Path=\\/; Expires=${today}; HttpOnly; SameSite=Strict$`);
+    expect(closedSession).toMatch(re);
   });
 
   it('returns an error when logging out an invalid session', async () => {
@@ -142,7 +149,7 @@ describe('authentication controller', () => {
       path: '/api/logout',
       method: 'POST',
       headers: {
-        Cookie: 'Cookie: session=s%3A30ce0bc5-7f02-447b-8c51-d46367025c35.wqu1s9TtvG8x1QZeMiYN4LQzP29milGDwYMwkMFILhc; Path=/; Secure; SameSite=Strict',
+        Cookie: 'Cookie: session=s%3A30ce0bc5-7f02-447b-8c51-d46367025c35.wqu1s9TtvG8x1QZeMiYN4LQzP29milGDwYMwkMFILhc; Path=/; HttpOnly; SameSite=Strict',
       },
       body: {
         username: 'test',
