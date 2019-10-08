@@ -1,7 +1,8 @@
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 // eslint-disable-next-line no-unused-vars
 import { NextFunction, Response } from 'express';
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars, import/no-unresolved
 import { Request } from 'express-serve-static-core';
 
 export const logger = morgan('combined');
@@ -15,3 +16,5 @@ export const checkContentType = (req: Request, res: Response, next: NextFunction
 
   return next();
 };
+
+export const parseCookie = cookieParser(process.env.COOKIE_SECRET || 'development');
