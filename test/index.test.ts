@@ -3,6 +3,7 @@ import server from '../src';
 import pool from '../src/database/pool';
 import seedMessages from './helpers/seedMessages';
 import request from './helpers/request';
+import { createUser } from '../src/database';
 
 const { PORT = 3000 } = process.env;
 
@@ -15,8 +16,29 @@ describe('app', () => {
   beforeAll(async (done) => {
     pgClient = await pool.connect();
     await seedMessages(loadMessages);
+    await createUser('test', 'test');
 
-    client = io(`http://localhost:${PORT}`)
+    const loginResponse = await request({
+      port: Number(PORT),
+      method: 'POST',
+      path: '/api/login',
+      body: {
+        username: 'test',
+        password: 'test',
+      },
+    });
+
+    const session = loginResponse.res.headers['set-cookie'][0];
+
+    client = io(`http://localhost:${PORT}`, {
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            Cookie: session,
+          },
+        },
+      },
+    })
       .on('connect', done);
   });
 
@@ -60,6 +82,16 @@ describe('app', () => {
           expect(message).toEqual('howdy');
           done();
         });
+      });
+    });
+
+    describe('connection', () => {
+      it('will not connect without a session', (done) => {
+        io(`http://localhost:${PORT}`)
+          .on('error', (e) => {
+            expect(e).toEqual('Session not found');
+            done();
+          });
       });
     });
   });

@@ -1,18 +1,21 @@
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import {
   createUser,
   authenticateUser,
   createSession,
   destroySession,
 } from '../../database';
-import { checkContentType } from '../../helpers/middleware';
+import { checkContentType, logger } from '../../helpers/middleware';
+
+const { NODE_ENV } = process.env;
+
+const isProduction = !['development', 'test'].includes(NODE_ENV!);
 
 export default express.Router()
   .use(
+    logger,
     checkContentType,
     express.json(),
-    cookieParser(process.env.COOKIE_SECRET || 'development'),
   )
   .post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -31,7 +34,8 @@ export default express.Router()
         .cookie('session', token, {
           signed: true,
           sameSite: true,
-          secure: true,
+          httpOnly: true,
+          secure: isProduction,
         })
         .json({ message: 'Login successful.' });
     } catch (e) {
@@ -40,7 +44,12 @@ export default express.Router()
   })
   .post('/logout', async (req, res) => {
     const { session } = req.signedCookies;
-    res.cookie('session', '', { maxAge: Date.now() });
+    res.cookie('session', '', {
+      expires: new Date(),
+      httpOnly: true,
+      sameSite: true,
+      secure: isProduction,
+    });
     try {
       await destroySession(session);
       return res.status(200).json({ message: 'Logout successful' });

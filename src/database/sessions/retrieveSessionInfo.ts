@@ -5,7 +5,7 @@ FROM users u
 JOIN sessions s ON s.user_id = u.id
 WHERE token = $1`;
 
-const checkSession = async (token: string): Promise<number> => {
+const retrieveSessionInfo = async (token: string): Promise<number> => {
   const { rows: [userInfo] } = await pool.query(sql, [token]);
   if (!userInfo) {
     throw new Error('Session not found');
@@ -18,4 +18,4 @@ const checkSession = async (token: string): Promise<number> => {
   return userInfo.id;
 };
 
-export default checkSession;
+export default retrieveSessionInfo;
