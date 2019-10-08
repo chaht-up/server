@@ -1,7 +1,10 @@
+import morgan from 'morgan';
 // eslint-disable-next-line no-unused-vars
 import { NextFunction, Response } from 'express';
 // eslint-disable-next-line no-unused-vars
 import { Request } from 'express-serve-static-core';
+
+export const logger = morgan('combined');
 
 // eslint-disable-next-line import/prefer-default-export
 export const checkContentType = (req: Request, res: Response, next: NextFunction) => {
