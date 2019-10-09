@@ -51,6 +51,7 @@ describe('authentication controller', () => {
       method: 'GET',
       headers: {
         Cookie: 'cookie',
+        'content-type': null,
       },
     });
 

@@ -11,7 +11,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 app.set('trust proxy', 1);
 app.use(parseCookie);
-app.use('/api', authentication, session);
+app.use('/api', session, authentication);
 app.all('*', (_, res) => res.status(404).json({ message: 'Not found.' }));
 
 const server = http.createServer(app);
