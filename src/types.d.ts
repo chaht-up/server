@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-namespace Api {
+declare namespace Api {
   export interface UserInfo {
     username: string;
     userId: number;

@@ -1,29 +1,25 @@
+import { expect } from 'chai';
 import { getAllMessages } from '../../../src/database';
 import seedMessages from '../../helpers/seedMessages';
 
 const has = Object.prototype.hasOwnProperty;
 
 describe('getAllMessages', () => {
-  let pgClient;
   const values = [
     'hello',
     'is there anybody out there',
     'just nod if you can hear me',
   ];
 
-  beforeAll(async () => {
+  before(async () => {
     await seedMessages(values);
-  });
-
-  afterAll(async () => {
-    await pgClient.release();
   });
 
   it('retrieves all messages from DB', async () => {
     const messages = await getAllMessages();
-    expect(messages.map((m) => m.text)).toEqual(values);
-    expect(messages.every((m) => has.call(m, 'senderId'))).toBe(true);
-    expect(messages.every((m) => has.call(m, 'id'))).toBe(true);
-    expect(messages.every((m) => has.call(m, 'sentAt'))).toBe(true);
+    expect(messages.map((m) => m.text)).to.eql(values);
+    expect(messages.every((m) => has.call(m, 'senderId'))).to.eql(true);
+    expect(messages.every((m) => has.call(m, 'id'))).to.eql(true);
+    expect(messages.every((m) => has.call(m, 'sentAt'))).to.eql(true);
   });
 });

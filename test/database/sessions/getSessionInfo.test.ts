@@ -1,10 +1,11 @@
+import { expect } from 'chai';
 import { getSessionInfo, createUser, createSession } from '../../../src/database';
 import pool from '../../../src/database/pool';
 
 describe('getSessionInfo', () => {
   let userId = 0;
   let token = '';
-  beforeAll(async () => {
+  before(async () => {
     await pool.query('TRUNCATE TABLE users CASCADE');
     userId = await createUser('session_test', 'abcdef');
   });
@@ -16,8 +17,8 @@ describe('getSessionInfo', () => {
 
   it('validates a session is active and returns the user id', async () => {
     const { userId: id, username } = await getSessionInfo(token);
-    expect(id).toEqual(userId);
-    expect(username).toEqual('session_test');
+    expect(id).to.eql(userId);
+    expect(username).to.eql('session_test');
   });
 
   it('throws an error if the session cannot be found', async () => {
@@ -25,7 +26,7 @@ describe('getSessionInfo', () => {
       // this will fail once every trillion years
       await getSessionInfo('c1945cfc-6f23-4cb4-9562-f39144f16b84');
     } catch (e) {
-      expect(e.message).toEqual('Session not found');
+      expect(e.message).to.eql('Session not found');
     }
   });
 
@@ -35,7 +36,7 @@ describe('getSessionInfo', () => {
       // this will fail once every trillion years
       await getSessionInfo(token);
     } catch (e) {
-      expect(e.message).toEqual('Session is invalid');
+      expect(e.message).to.eql('Session is invalid');
     }
   });
 });

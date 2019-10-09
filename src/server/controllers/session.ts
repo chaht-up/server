@@ -1,11 +1,16 @@
 import express from 'express';
-import { logger } from '../../helpers/middleware';
-import { nullCookie } from '../../helpers/cookies';
-import { getSessionInfo } from '../../database';
+import {
+  authenticateUser,
+  createSession,
+  destroySession,
+  getSessionInfo,
+} from '../../database';
+import { IS_PRODUCTION, nullCookie } from '../../helpers/cookies';
+import { logger, checkContentType } from '../../helpers/middleware';
 
 export default express.Router()
   .use(logger)
-  .get('/session', async (req, res) => {
+  .get('/', async (req, res) => {
     const { session } = req.signedCookies;
 
     if (!session) {
@@ -16,4 +21,32 @@ export default express.Router()
 
     const sessionInfo = await getSessionInfo(session);
     return res.json(sessionInfo);
+  })
+  .post('/', checkContentType, async (req, res) => {
+    const { username, password } = req.body;
+    try {
+      const userInfo = await authenticateUser(username, password);
+      const token = await createSession(userInfo.userId);
+      return res
+        .status(201)
+        .cookie('session', token, {
+          signed: true,
+          sameSite: true,
+          httpOnly: true,
+          secure: IS_PRODUCTION,
+        })
+        .json(userInfo);
+    } catch (e) {
+      return res.status(400).json({ message: 'Login unsuccessful.' });
+    }
+  })
+  .delete('/', async (req, res) => {
+    const { session } = req.signedCookies;
+    res.cookie('session', '', nullCookie());
+    try {
+      await destroySession(session);
+      return res.status(200).json({ message: 'Logout successful' });
+    } catch (e) {
+      return res.status(400).json({ message: e.message });
+    }
   });

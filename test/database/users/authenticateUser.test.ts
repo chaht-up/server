@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import { createUser, authenticateUser } from '../../../src/database';
 import pool from '../../../src/database/pool';
 
@@ -11,16 +12,16 @@ describe('createUser', () => {
 
   it('creates a user', async () => {
     const { userId: id, username } = await authenticateUser('test', 'anothertest');
-    expect(id).toEqual(userId);
-    expect(username).toEqual('test');
+    expect(id).to.eql(userId);
+    expect(username).to.eql('test');
   });
 
   it('throws if the password is wrong', async () => {
     try {
       await authenticateUser('test', 'notTheRightOne');
-      expect(true).toBe(false);
+      expect(true).to.eql(false);
     } catch (e) {
-      expect(e.message).toEqual('Invalid credentials');
+      expect(e.message).to.eql('Invalid credentials');
     }
   });
 });
