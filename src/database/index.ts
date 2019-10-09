@@ -6,6 +6,7 @@ import getSessionInfo from './sessions/getSessionInfo';
 import authenticateUser from './users/authenticateUser';
 import createUser from './users/createUser';
 import getUserDictionary from './users/getUserDictionary';
+import getUserById from './users/getUserById';
 
 
 export {
@@ -14,6 +15,7 @@ export {
   authenticateUser,
   createUser,
   getUserDictionary,
+  getUserById,
   createSession,
   getSessionInfo,
   destroySession,
