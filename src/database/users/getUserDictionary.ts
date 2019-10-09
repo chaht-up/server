@@ -1,19 +1,11 @@
 import pool from '../pool';
 
-interface IUserEntry {
-  username: string;
-}
-
-interface IUserDictionary {
-  [id: number]: IUserEntry;
-}
-
 const sql = 'SELECT id, username FROM users';
 
-const getUserDictionary = async (): Promise<IUserDictionary> => {
+const getUserDictionary = async (): Promise<Api.UserDictionary> => {
   const { rows: users } = await pool.query(sql);
 
-  const userDict: IUserDictionary = {};
+  const userDict: Api.UserDictionary = {};
 
   // eslint-disable-next-line no-restricted-syntax
   for (const { id, ...rest } of users) {

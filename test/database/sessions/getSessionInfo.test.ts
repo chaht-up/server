@@ -1,7 +1,7 @@
-import { retrieveSessionInfo, createUser, createSession } from '../../../src/database';
+import { getSessionInfo, createUser, createSession } from '../../../src/database';
 import pool from '../../../src/database/pool';
 
-describe('retrieveSessionInfo', () => {
+describe('getSessionInfo', () => {
   let userId = 0;
   let token = '';
   beforeAll(async () => {
@@ -15,14 +15,15 @@ describe('retrieveSessionInfo', () => {
   });
 
   it('validates a session is active and returns the user id', async () => {
-    const id = await retrieveSessionInfo(token);
+    const { userId: id, username } = await getSessionInfo(token);
     expect(id).toEqual(userId);
+    expect(username).toEqual('session_test');
   });
 
   it('throws an error if the session cannot be found', async () => {
     try {
       // this will fail once every trillion years
-      await retrieveSessionInfo('c1945cfc-6f23-4cb4-9562-f39144f16b84');
+      await getSessionInfo('c1945cfc-6f23-4cb4-9562-f39144f16b84');
     } catch (e) {
       expect(e.message).toEqual('Session not found');
     }
@@ -32,7 +33,7 @@ describe('retrieveSessionInfo', () => {
     try {
       await pool.query('UPDATE sessions SET is_active = false WHERE token = $1', [token]);
       // this will fail once every trillion years
-      await retrieveSessionInfo(token);
+      await getSessionInfo(token);
     } catch (e) {
       expect(e.message).toEqual('Session is invalid');
     }

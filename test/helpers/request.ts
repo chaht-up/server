@@ -3,7 +3,7 @@ import http from 'http';
 interface IOptions {
   path: string;
   port: number;
-  method: 'POST';
+  method: 'POST' | 'GET';
   body?: null | object;
   host?: string;
   headers?: object;

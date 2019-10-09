@@ -8,7 +8,7 @@ const handleConnect = (io: SocketIO.Server) => (socket: SocketIO.Socket) => {
   });
 
   socket.on('message:post', async (message) => {
-    const record = await insertMessage(message, sessionStore.get(socket));
+    const record = await insertMessage(message, sessionStore.get(socket)!.userId);
     io.emit('message:new', record);
   });
 

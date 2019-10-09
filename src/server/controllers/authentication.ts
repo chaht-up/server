@@ -6,10 +6,7 @@ import {
   destroySession,
 } from '../../database';
 import { checkContentType, logger } from '../../helpers/middleware';
-
-const { NODE_ENV } = process.env;
-
-const isProduction = !['development', 'test'].includes(NODE_ENV!);
+import { IS_PRODUCTION, nullCookie } from '../../helpers/cookies';
 
 export default express.Router()
   .use(
@@ -35,7 +32,7 @@ export default express.Router()
           signed: true,
           sameSite: true,
           httpOnly: true,
-          secure: isProduction,
+          secure: IS_PRODUCTION,
         })
         .json(userInfo);
     } catch (e) {
@@ -44,12 +41,7 @@ export default express.Router()
   })
   .post('/logout', async (req, res) => {
     const { session } = req.signedCookies;
-    res.cookie('session', '', {
-      expires: new Date(),
-      httpOnly: true,
-      sameSite: true,
-      secure: isProduction,
-    });
+    res.cookie('session', '', nullCookie());
     try {
       await destroySession(session);
       return res.status(200).json({ message: 'Logout successful' });
