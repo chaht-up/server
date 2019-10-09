@@ -44,7 +44,7 @@ describe('authentication controller', () => {
     expect(registerResponse.res.statusCode).toEqual(201);
     expect(registerResponse.body).toEqual({ message: 'User created successfully.' });
 
-    const { body, res } = await request({
+    const { body: { userId, username }, res } = await request({
       port: Number(PORT),
       path: '/api/login',
       method: 'POST',
@@ -54,7 +54,10 @@ describe('authentication controller', () => {
       },
     });
 
-    expect(body).toEqual({ message: 'Login successful.' });
+    const { rows: [{ id }] } = await pool.query('SELECT id FROM users WHERE username = $1', ['test']);
+
+    expect(userId).toEqual(id);
+    expect(username).toEqual('test');
     expect(res.statusCode).toEqual(201);
     expect(res.headers['set-cookie']).not.toBeUndefined();
     const session = res.headers['set-cookie'][0];
@@ -103,6 +106,7 @@ describe('authentication controller', () => {
 
     expect(registerResponse.res.statusCode).toEqual(201);
     expect(registerResponse.body).toEqual({ message: 'User created successfully.' });
+    const { rows: [{ id }] } = await pool.query('SELECT id FROM users WHERE username = $1', ['test']);
 
     const loginResponse = await request({
       port: Number(PORT),
@@ -114,7 +118,8 @@ describe('authentication controller', () => {
       },
     });
 
-    expect(loginResponse.body).toEqual({ message: 'Login successful.' });
+    expect(loginResponse.body.userId).toEqual(id);
+    expect(loginResponse.body.username).toEqual('test');
     expect(loginResponse.res.statusCode).toEqual(201);
     expect(loginResponse.res.headers['set-cookie']).not.toBeUndefined();
     const session = loginResponse.res.headers['set-cookie'][0];

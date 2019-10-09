@@ -27,8 +27,8 @@ export default express.Router()
   .post('/login', async (req, res) => {
     const { username, password } = req.body;
     try {
-      const userId = await authenticateUser(username, password);
-      const token = await createSession(userId);
+      const userInfo = await authenticateUser(username, password);
+      const token = await createSession(userInfo.userId);
       return res
         .status(201)
         .cookie('session', token, {
@@ -37,7 +37,7 @@ export default express.Router()
           httpOnly: true,
           secure: isProduction,
         })
-        .json({ message: 'Login successful.' });
+        .json(userInfo);
     } catch (e) {
       return res.status(400).json({ message: 'Login unsuccessful.' });
     }

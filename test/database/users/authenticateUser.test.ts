@@ -10,7 +10,9 @@ describe('createUser', () => {
   });
 
   it('creates a user', async () => {
-    expect(await authenticateUser('test', 'anothertest')).toEqual(userId);
+    const { userId: id, username } = await authenticateUser('test', 'anothertest');
+    expect(id).toEqual(userId);
+    expect(username).toEqual('test');
   });
 
   it('throws if the password is wrong', async () => {
