@@ -6,7 +6,7 @@ describe('createSession', () => {
   let userId = 0;
   before(async () => {
     await pool.query('TRUNCATE TABLE users CASCADE');
-    userId = await createUser('session_test', 'abcdef');
+    ({ userId } = await createUser('session_test', 'abcdef'));
   });
 
   beforeEach(async () => {

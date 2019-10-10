@@ -9,7 +9,7 @@ describe('session controller', () => {
   let userId = 0;
   before(async () => {
     await pool.query('TRUNCATE TABLE users CASCADE');
-    userId = await createUser('test', 'goodpassword');
+    ({ userId } = await createUser('test', 'goodpassword'));
   });
 
   beforeEach(() => pool.query('TRUNCATE TABLE sessions'));

@@ -23,7 +23,37 @@ describe('user controller', () => {
       });
 
       expect(res.statusCode).to.eql(201);
-      expect(body).to.eql({ message: 'User created successfully.' });
+      expect(res.headers['set-cookie']).to.match(/^session=[A-Za-z0-9%.-]+; Path=\/; HttpOnly; SameSite=Strict$/);
+      expect(Number.isInteger(body.userId)).to.eql(true);
+      expect(body.username).to.eql('test');
+    });
+
+    it('rejects duplicate users', async () => {
+      const firstRegister = await request({
+        port: Number(PORT),
+        path: '/api/users',
+        method: 'POST',
+        body: {
+          username: 'test',
+          password: 'test',
+        },
+      });
+
+      expect(firstRegister.res.statusCode).to.eql(201);
+
+      const { body, res } = await request({
+        port: Number(PORT),
+        path: '/api/users',
+        method: 'POST',
+        body: {
+          username: 'test',
+          password: 'test',
+        },
+      });
+
+      expect(res.statusCode).to.eql(400);
+      expect(res.headers['set-cookie']).to.eql(undefined);
+      expect(body.message).to.eql('This username is not available');
     });
 
     it('rejects non-json requests', async () => {
@@ -46,7 +76,7 @@ describe('user controller', () => {
   describe('GET /api/users/:id', () => {
     let userId = 0;
     before(async () => {
-      userId = await createUser('test_controller', 'test');
+      ({ userId } = await createUser('test_controller', 'test'));
     });
 
     it('gets a user by ID', async () => {

@@ -1,6 +1,8 @@
 import express from 'express';
-import { createUser, getUserById } from '../../database';
+import { createUser, getUserById, createSession } from '../../database';
 import { checkContentType, logger } from '../../helpers/middleware';
+import { COOKIE_OPTS } from '../../helpers/cookies';
+import convertError from '../../helpers/convertError';
 
 export default express.Router()
   .use(logger)
@@ -17,7 +19,16 @@ export default express.Router()
   .post('/', checkContentType, async (req, res) => {
     const { username, password } = req.body;
 
-    await createUser(username, password);
+    try {
+      const userInfo = await createUser(username, password);
+      const token = await createSession(userInfo.userId);
 
-    return res.status(201).json({ message: 'User created successfully.' });
+      return res
+        .status(201)
+        .cookie('session', token, COOKIE_OPTS)
+        .json(userInfo);
+    } catch (e) {
+      const { code, message } = convertError(e);
+      return res.status(code).json({ message });
+    }
   });

@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { expect } from 'chai';
 import { createUser } from '../../../src/database';
 import pool from '../../../src/database/pool';
+import ApiError from '../../../src/helpers/ApiError';
 
 describe('createUser', () => {
   beforeEach(async () => {
@@ -23,13 +24,23 @@ describe('createUser', () => {
 
   it('will not create duplicate users (unique usernames)', async () => {
     try {
-      const userId = await createUser('test', 'test');
+      const { userId } = await createUser('test', 'test');
       expect(userId).to.be.a('number');
       await createUser('test', 'test');
       expect(true).to.eql(false);
     } catch (e) {
+      expect(e).to.be.instanceOf(ApiError);
+      expect(e.message).to.eql('This username is not available');
+    }
+  });
+
+  it('throws without a password', async () => {
+    try {
+      await createUser('test', null);
+      expect(true).to.eql(false);
+    } catch (e) {
       expect(e).to.be.instanceOf(Error);
-      expect(e.message).to.eql('duplicate key value violates unique constraint "users_username_key"');
+      expect(e.message).to.eql('data and salt arguments required');
     }
   });
 });

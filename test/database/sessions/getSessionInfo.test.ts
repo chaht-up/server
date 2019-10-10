@@ -7,7 +7,7 @@ describe('getSessionInfo', () => {
   let token = '';
   before(async () => {
     await pool.query('TRUNCATE TABLE users CASCADE');
-    userId = await createUser('session_test', 'abcdef');
+    ({ userId } = await createUser('session_test', 'abcdef'));
   });
 
   beforeEach(async () => {

@@ -5,7 +5,7 @@ import {
   destroySession,
   getSessionInfo,
 } from '../../database';
-import { IS_PRODUCTION, nullCookie } from '../../helpers/cookies';
+import { nullCookie, COOKIE_OPTS } from '../../helpers/cookies';
 import { logger, checkContentType } from '../../helpers/middleware';
 
 export default express.Router()
@@ -29,12 +29,7 @@ export default express.Router()
       const token = await createSession(userInfo.userId);
       return res
         .status(201)
-        .cookie('session', token, {
-          signed: true,
-          sameSite: true,
-          httpOnly: true,
-          secure: IS_PRODUCTION,
-        })
+        .cookie('session', token, COOKIE_OPTS)
         .json(userInfo);
     } catch (e) {
       return res.status(400).json({ message: 'Login unsuccessful.' });

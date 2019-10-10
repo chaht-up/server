@@ -1,0 +1,4 @@
+# mocha.opts
+  -r ts-node/register/transpile-only
+  --recursive test/**/*.test.ts
+  --exit

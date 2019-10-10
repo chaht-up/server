@@ -8,3 +8,10 @@ export const nullCookie = () => ({
   sameSite: true,
   secure: IS_PRODUCTION,
 });
+
+export const COOKIE_OPTS = {
+  signed: true,
+  sameSite: true,
+  httpOnly: true,
+  secure: IS_PRODUCTION,
+};

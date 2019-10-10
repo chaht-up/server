@@ -8,7 +8,7 @@ describe('getUserById', () => {
 
   before(async () => {
     await pool.query('TRUNCATE TABLE users CASCADE');
-    userId = await createUser('getTest', 'test');
+    ({ userId } = await createUser('getTest', 'test'));
   });
 
   it('gets users by their id', async () => {

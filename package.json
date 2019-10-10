@@ -10,7 +10,7 @@
     "test-migrate-up": "DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test node-pg-migrate up",
     "test-migrate-down": "DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test node-pg-migrate down",
     "pretest": "npm run test-migrate-down && npm run test-migrate-up",
-    "test": "NODE_ENV=test DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test nyc --reporter=text mocha -r ts-node/register/transpile-only test/**/*.test.ts --exit"
+    "test": "NODE_ENV=test DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test nyc --reporter=text mocha"
   },
   "husky": {
     "hooks": {
@@ -26,7 +26,12 @@
     ],
     "include": [
       "src/**/*.ts"
-    ]
+    ],
+    "branches": 100,
+    "lines": 100,
+    "functions": 100,
+    "statements": 100,
+    "check-coverage": true
   },
   "author": "",
   "license": "ISC",

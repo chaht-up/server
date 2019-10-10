@@ -12,7 +12,7 @@ describe('session controller', () => {
   describe('GET /api/sessions', () => {
     before(async () => {
       await pool.query('TRUNCATE TABLE users CASCADE');
-      userId = await createUser('session_test', 'abcd');
+      ({ userId } = await createUser('session_test', 'abcd'));
       const { res: loginRes } = await request({
         port: Number(PORT),
         path: '/api/sessions',
