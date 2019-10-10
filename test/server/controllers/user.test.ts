@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import request from '../../helpers/request';
 import pool from '../../../src/database/pool';
 import { createUser } from '../../../src/database';
+import { errors } from '../../../src/helpers/messages';
 
 const { PORT = 3000 } = process.env;
 
@@ -53,7 +54,7 @@ describe('user controller', () => {
 
       expect(res.statusCode).to.eql(400);
       expect(res.headers['set-cookie']).to.eql(undefined);
-      expect(body.message).to.eql('This username is not available');
+      expect(body.message).to.eql(errors.USERNAME_NOT_AVAILABLE);
     });
 
     it('rejects non-json requests', async () => {
@@ -69,7 +70,7 @@ describe('user controller', () => {
       });
 
       expect(res.statusCode).to.eql(406);
-      expect(body).to.eql({ message: 'Content type must be "application/json"' });
+      expect(body).to.eql({ message: errors.INVALID_CONTENT_TYPE });
     });
   });
 
@@ -104,7 +105,7 @@ describe('user controller', () => {
       });
 
       expect(res.statusCode).to.eql(404);
-      expect(body).to.eql({ message: 'User not found' });
+      expect(body).to.eql({ message: errors.USER_NOT_FOUND });
     });
   });
 });

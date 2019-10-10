@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
 import pool from '../pool';
+import { errors } from '../../helpers/messages';
+import ApiError from '../../helpers/ApiError';
 
 const sql = `SELECT u.id as "userId", u.username, us.password as "hash"
 FROM users u
@@ -13,7 +15,7 @@ const authenticateUser = async (username: string, password: string): Promise<Api
     return userInfo as Api.UserInfo;
   }
 
-  throw new Error('Invalid credentials');
+  throw new ApiError(errors.INVALID_CREDENTIALS, 400);
 };
 
 export default authenticateUser;

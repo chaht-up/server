@@ -7,6 +7,7 @@ import {
 } from '../../database';
 import { nullCookie, COOKIE_OPTS } from '../../helpers/cookies';
 import { logger, checkContentType } from '../../helpers/middleware';
+import { errors, successes } from '../../helpers/messages';
 
 export default express.Router()
   .use(logger)
@@ -16,7 +17,7 @@ export default express.Router()
     if (!session) {
       return res.status(401)
         .cookie('session', '', nullCookie())
-        .json({ message: 'Unauthorized.' });
+        .json({ message: errors.UNAUTHORIZED });
     }
 
     const sessionInfo = await getSessionInfo(session);
@@ -32,7 +33,7 @@ export default express.Router()
         .cookie('session', token, COOKIE_OPTS)
         .json(userInfo);
     } catch (e) {
-      return res.status(400).json({ message: 'Login unsuccessful.' });
+      return res.status(400).json({ message: errors.LOGIN_UNSUCCESSFUL });
     }
   })
   .delete('/', async (req, res) => {
@@ -40,7 +41,7 @@ export default express.Router()
     res.cookie('session', '', nullCookie());
     try {
       await destroySession(session);
-      return res.status(200).json({ message: 'Logout successful' });
+      return res.status(200).json({ message: successes.LOGOUT_SUCCESSFUL });
     } catch (e) {
       return res.status(400).json({ message: e.message });
     }

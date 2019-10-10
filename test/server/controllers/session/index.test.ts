@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import request from '../../../helpers/request';
 import pool from '../../../../src/database/pool';
 import { createUser } from '../../../../src/database';
+import { errors } from '../../../../src/helpers/messages';
 
 const { PORT = 3000 } = process.env;
 
@@ -44,7 +45,7 @@ describe('session controller', () => {
       },
     });
 
-    expect(body).to.eql({ message: 'Login unsuccessful.' });
+    expect(body).to.eql({ message: errors.LOGIN_UNSUCCESSFUL });
     expect(res.statusCode).to.eql(400);
     expect(res.headers.cookie).to.eql(undefined);
   });
@@ -101,7 +102,7 @@ describe('session controller', () => {
     });
 
     expect(res.statusCode).to.eql(400);
-    expect(body).to.eql({ message: 'Session is invalid' });
+    expect(body).to.eql({ message: errors.SESSION_INVALID });
   });
 
   it('rejects non-json requests', async () => {
@@ -113,6 +114,6 @@ describe('session controller', () => {
     });
 
     expect(res.statusCode).to.eql(406);
-    expect(body).to.eql({ message: 'Content type must be "application/json"' });
+    expect(body).to.eql({ message: errors.INVALID_CONTENT_TYPE });
   });
 });

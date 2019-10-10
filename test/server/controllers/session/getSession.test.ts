@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import request from '../../../helpers/request';
 import pool from '../../../../src/database/pool';
 import { createUser } from '../../../../src/database';
+import { errors } from '../../../../src/helpers/messages';
 
 const { PORT = 3000 } = process.env;
 
@@ -54,7 +55,7 @@ describe('session controller', () => {
       });
 
       expect(sessionInfoRes.statusCode).to.eql(401);
-      expect(body).to.eql({ message: 'Unauthorized.' });
+      expect(body).to.eql({ message: errors.UNAUTHORIZED });
     });
   });
 });

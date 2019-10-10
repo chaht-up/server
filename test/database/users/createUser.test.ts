@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { createUser } from '../../../src/database';
 import pool from '../../../src/database/pool';
 import ApiError from '../../../src/helpers/ApiError';
+import { errors } from '../../../src/helpers/messages';
 
 describe('createUser', () => {
   beforeEach(async () => {
@@ -30,7 +31,7 @@ describe('createUser', () => {
       expect(true).to.eql(false);
     } catch (e) {
       expect(e).to.be.instanceOf(ApiError);
-      expect(e.message).to.eql('This username is not available');
+      expect(e.message).to.eql(errors.USERNAME_NOT_AVAILABLE);
     }
   });
 

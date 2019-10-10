@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import pool from '../pool';
 import ApiError from '../../helpers/ApiError';
+import { errors } from '../../helpers/messages';
 
 const sqlUser = 'INSERT INTO users (username) VALUES ($1) RETURNING id';
 const sqlSecret = 'INSERT INTO user_secrets (user_id, password) VALUES ($1, $2)';
@@ -20,7 +21,7 @@ const createUser = async (username: string, password: string): Promise<Api.UserI
     client.query('ROLLBACK');
 
     if (e.constraint === 'users_username_key') {
-      throw new ApiError('This username is not available', 400);
+      throw new ApiError(errors.USERNAME_NOT_AVAILABLE, 400);
     }
 
     console.error(e);

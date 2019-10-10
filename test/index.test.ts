@@ -5,6 +5,7 @@ import seedMessages from './helpers/seedMessages';
 import request from './helpers/request';
 import { createUser } from '../src/database';
 import pool from '../src/database/pool';
+import { errors } from '../src/helpers/messages';
 
 
 const { PORT = 3000 } = process.env;
@@ -105,7 +106,7 @@ describe('app', () => {
       const { res, body } = await request({ port: Number(PORT), path: '/api/home', method: 'POST' });
 
       expect(res.statusCode).to.eql(404);
-      expect(body).to.eql({ message: 'Not found.' });
+      expect(body).to.eql({ message: errors.NOT_FOUND });
     });
   });
 });
