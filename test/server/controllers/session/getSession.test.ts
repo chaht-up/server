@@ -43,7 +43,7 @@ describe('session controller', () => {
       expect(body.username).to.eql('session_test');
     });
 
-    it('handles bad cookies', async () => {
+    it('handles malformed cookies', async () => {
       const { res: sessionInfoRes, body } = await request({
         port: Number(PORT),
         path: '/api/sessions',
@@ -56,6 +56,21 @@ describe('session controller', () => {
 
       expect(sessionInfoRes.statusCode).to.eql(401);
       expect(body).to.eql({ message: errors.UNAUTHORIZED });
+    });
+
+    it('handles bad cookies', async () => {
+      const { res: sessionInfoRes, body } = await request({
+        port: Number(PORT),
+        path: '/api/sessions',
+        method: 'GET',
+        headers: {
+          Cookie: 'session=s%3A1f3c84d3-278d-490e-9e4e-21c3b8ff24b1.aw9axkwgWGcDZz116oIcLXWpDy82Fs1Zg2IClu8JiSA; Path=/; HttpOnly; SameSite=Strict',
+          'content-type': null,
+        },
+      });
+
+      expect(sessionInfoRes.statusCode).to.eql(400);
+      expect(body).to.eql({ message: errors.SESSION_NOT_FOUND });
     });
   });
 });

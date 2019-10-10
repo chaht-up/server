@@ -8,6 +8,7 @@ import {
 import { nullCookie, COOKIE_OPTS } from '../../helpers/cookies';
 import { logger, checkContentType } from '../../helpers/middleware';
 import { errors, successes } from '../../helpers/messages';
+import convertError from '../../helpers/convertError';
 
 export default express.Router()
   .use(logger)
@@ -20,8 +21,13 @@ export default express.Router()
         .json({ message: errors.UNAUTHORIZED });
     }
 
-    const sessionInfo = await getSessionInfo(session);
-    return res.json(sessionInfo);
+    try {
+      const sessionInfo = await getSessionInfo(session);
+      return res.json(sessionInfo);
+    } catch (e) {
+      const { code, message } = convertError(e);
+      return res.status(code).json({ message });
+    }
   })
   .post('/', checkContentType, async (req, res) => {
     const { username, password } = req.body;
