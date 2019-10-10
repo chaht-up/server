@@ -114,6 +114,6 @@ describe('session controller', () => {
     });
 
     expect(res.statusCode).to.eql(406);
-    expect(body).to.eql({ message: errors.INVALID_CONTENT_TYPE });
+    expect(body).to.eql({ message: errors.CONTENT_TYPE_INVALID });
   });
 });

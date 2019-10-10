@@ -15,7 +15,7 @@ const authenticateUser = async (username: string, password: string): Promise<Api
     return userInfo as Api.UserInfo;
   }
 
-  throw new ApiError(errors.INVALID_CREDENTIALS, 400);
+  throw new ApiError(errors.CREDENTIALS_INVALID, 400);
 };
 
 export default authenticateUser;

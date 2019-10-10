@@ -14,7 +14,7 @@ const parseBody = express.json();
 export const checkContentType = (req: Request, res: Response, next: NextFunction) => {
   const contentType = req.headers['content-type'];
   if (!contentType || contentType.toLowerCase() !== 'application/json') {
-    return res.status(406).json({ message: errors.INVALID_CONTENT_TYPE });
+    return res.status(406).json({ message: errors.CONTENT_TYPE_INVALID });
   }
 
   return parseBody(req, res, next);
