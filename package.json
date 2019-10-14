@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "compile": "rm -rf && tsc",
+    "compile": "rm -rf dist && tsc",
     "migrate": "node-pg-migrate",
     "dev": "ts-node-dev src",
     "test-migrate-up": "DATABASE_URL=postgresql://postgres@localhost:5432/chaht_up_test node-pg-migrate up",
