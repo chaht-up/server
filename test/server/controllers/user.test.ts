@@ -1,3 +1,4 @@
+import io from 'socket.io-client';
 import { expect } from 'chai';
 import request from '../../helpers/request';
 import pool from '../../../src/database/pool';
@@ -71,6 +72,49 @@ describe('user controller', () => {
 
       expect(res.statusCode).to.eql(406);
       expect(body).to.eql({ message: errors.CONTENT_TYPE_INVALID });
+    });
+
+    it('emits an event with a new user on registration', async () => {
+      const { body, res } = await request({
+        port: Number(PORT),
+        path: '/api/users',
+        method: 'POST',
+        body: {
+          username: 'test',
+          password: 'test',
+        },
+      });
+
+      expect(res.statusCode).to.eql(201);
+      expect(res.headers['set-cookie']).to.match(/^session=[A-Za-z0-9%.-]+; Path=\/; HttpOnly; SameSite=Strict$/);
+      expect(Number.isInteger(body.userId)).to.eql(true);
+      expect(body.username).to.eql('test');
+
+      const client = io(`http://localhost:${PORT}`, {
+        transportOptions: {
+          polling: {
+            extraHeaders: { Cookie: res.headers['set-cookie'] },
+          },
+        },
+      });
+
+      const event = new Promise((resolve) => client.once('user:update', resolve));
+
+      const { res: res2, body: body2 } = await request({
+        port: Number(PORT),
+        path: '/api/users',
+        method: 'POST',
+        body: {
+          username: 'test2',
+          password: 'test',
+        },
+      });
+
+      expect(res2.statusCode).to.eql(201);
+
+      const { userId, username } = await event;
+      expect(userId).to.eql(body2.userId);
+      expect(username).to.eql(body2.username);
     });
   });
 

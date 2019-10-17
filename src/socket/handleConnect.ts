@@ -1,8 +1,6 @@
-// eslint-disable-next-line no-unused-vars
-import { Server, Socket } from 'socket.io';
 import events from './events';
 
-const handleConnect = (io: Server) => (socket: Socket) => {
+const handleConnect = (io: SocketIO.Server) => (socket: SocketIO.Socket) => {
   for (const [eventName, handler] of events) {
     socket.on(eventName, handler(io, socket));
   }

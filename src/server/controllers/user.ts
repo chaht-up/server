@@ -3,8 +3,9 @@ import { createUser, getUserById, createSession } from '../../database';
 import { checkContentType, logger } from '../../helpers/middleware';
 import { COOKIE_OPTS } from '../../helpers/cookies';
 import convertError from '../../helpers/convertError';
+import { USER_UPDATE } from '../../socket/broadcasts';
 
-export default express.Router()
+export default (io: SocketIO.Server) => express.Router()
   .use(logger)
   .get('/:id', async (req, res) => {
     const { id } = req.params;
@@ -23,12 +24,13 @@ export default express.Router()
       const userInfo = await createUser(username, password);
       const token = await createSession(userInfo.userId);
 
-      return res
-        .status(201)
+      res.status(201)
         .cookie('session', token, COOKIE_OPTS)
         .json(userInfo);
+
+      io.emit(USER_UPDATE, userInfo);
     } catch (e) {
       const { code, message } = convertError(e);
-      return res.status(code).json({ message });
+      res.status(code).json({ message });
     }
   });

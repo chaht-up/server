@@ -1,4 +1,3 @@
-
 import { getAllMessages, getUserDictionary } from '../../../database';
 
 const appLoad: Api.EventTuple = [
