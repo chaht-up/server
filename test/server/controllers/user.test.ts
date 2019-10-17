@@ -112,9 +112,8 @@ describe('user controller', () => {
 
       expect(res2.statusCode).to.eql(201);
 
-      const { userId, username } = await event;
-      expect(userId).to.eql(body2.userId);
-      expect(username).to.eql(body2.username);
+      const userInfo = await event;
+      expect(userInfo).to.eql({ [body2.userId]: { username: body2.username } });
     });
   });
 

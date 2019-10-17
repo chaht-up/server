@@ -28,7 +28,9 @@ export default (io: SocketIO.Server) => express.Router()
         .cookie('session', token, COOKIE_OPTS)
         .json(userInfo);
 
-      io.emit(USER_UPDATE, userInfo);
+      const { userId, ...rest } = userInfo;
+
+      io.emit(USER_UPDATE, { [userId]: rest });
     } catch (e) {
       const { code, message } = convertError(e);
       res.status(code).json({ message });
