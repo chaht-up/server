@@ -18,4 +18,13 @@ declare namespace Api {
   export interface UserDictionary {
     [id: number]: UserEntry;
   }
+
+  interface EventListener {
+    (...args: any[]): void;
+  }
+  interface CurriedEventListener {
+    (io: import('socket.io').Server, socket: import('socket.io').Socket): EventListener
+  }
+
+  export type EventTuple = [string, CurriedEventListener];
 }

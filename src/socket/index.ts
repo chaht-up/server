@@ -1,7 +1,10 @@
+import socketIO from 'socket.io';
+import server from '../server';
 import handleConnect from './handleConnect';
-import useAuthentication from './useAuthentication';
+import authenticateSocket from './authenticateSocket';
 
-export {
-  handleConnect,
-  useAuthentication,
-};
+const io = socketIO(server);
+io.use(authenticateSocket);
+io.on('connection', handleConnect(io));
+
+export default io;

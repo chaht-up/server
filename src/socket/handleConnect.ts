@@ -1,19 +1,14 @@
-import { getAllMessages, insertMessage, getUserDictionary } from '../database';
-import sessionStore from '../helpers/sessionStore';
+// eslint-disable-next-line no-unused-vars
+import { Server, Socket } from 'socket.io';
+import events from './events';
 
-const handleConnect = (io: SocketIO.Server) => (socket: SocketIO.Socket) => {
-  socket.on('app:load', async (cb) => {
-    const [messages, users] = await Promise.all([getAllMessages(), getUserDictionary()]);
-    cb({ messages, users });
-  });
+const handleConnect = (io: Server) => (socket: Socket) => {
+  for (const [eventName, handler] of events) {
+    socket.on(eventName, handler(io, socket));
+  }
 
-  socket.on('message:post', async (message) => {
-    const record = await insertMessage(message, sessionStore.get(socket)!.userId);
-    io.emit('message:new', record);
-  });
-
-  socket.on('message', (message) => {
-    socket.send(message);
+  socket.on('message', (message, cb) => {
+    cb(message);
   });
 };
 

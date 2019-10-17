@@ -81,10 +81,8 @@ describe('app', () => {
 
     describe('echo', () => {
       it('echoes requests', (done) => {
-        client.send('howdy');
-
-        client.on('message', (message) => {
-          expect(message).to.eql('howdy');
+        client.send('howdy', (response) => {
+          expect(response).to.eql('howdy');
           done();
         });
       });

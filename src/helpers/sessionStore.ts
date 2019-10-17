@@ -1,1 +1,1 @@
-export default new WeakMap<SocketIO.Socket, Api.UserInfo>();
+export default new WeakMap<import('socket.io').Socket, Api.UserInfo>();
