@@ -9,16 +9,16 @@ const sqlSecret = 'INSERT INTO user_secrets (user_id, password) VALUES ($1, $2)'
 const createUser = async (username: string, password: string): Promise<Api.UserInfo> => {
   const client = await pool.connect();
   try {
-    client.query('BEGIN');
+    await client.query('BEGIN');
     const [{ rows: [{ id }] }, passwordHash] = await Promise.all([
       client.query(sqlUser, [username]),
       bcrypt.hash(password, 10),
     ]);
     await client.query(sqlSecret, [id, passwordHash]);
-    client.query('COMMIT');
+    await client.query('COMMIT');
     return { userId: id, username };
   } catch (e) {
-    client.query('ROLLBACK');
+    await client.query('ROLLBACK');
 
     if (e.constraint === 'users_username_key') {
       throw new ApiError(errors.USERNAME_NOT_AVAILABLE, 400);
